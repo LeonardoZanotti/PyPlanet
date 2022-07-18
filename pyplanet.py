@@ -102,6 +102,7 @@ def main():
                 sys.exit()
 
         for planet in planets:
+            planet.update_position(planets)
             planet.draw(SCREEN)
 
         pygame.display.update()
