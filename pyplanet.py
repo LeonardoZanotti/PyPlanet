@@ -12,12 +12,15 @@ pygame.init()
 SIZE = WIDTH, HEIGHT = 800, 800
 SCREEN = pygame.display.set_mode(SIZE)
 pygame.display.set_caption("Planet simulation")
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 BLUE = (100, 149, 237)
 RED = (188, 39, 50)
 DARK_GREY = (80, 71, 81)
+
+FONT = pygame.font.SysFont("comicsans", 16)
 
 
 class Planet:
@@ -47,13 +50,17 @@ class Planet:
         if len(self.orbit) > 2:
             updated_points = []
             for point in self.orbit:
-                x, y = point
-                x = x * self.SCALE + WIDTH / 2
-                y = y * self.SCALE + HEIGHT / 2
-                updated_points.append((x, y))
+                px, py = point
+                px = px * self.SCALE + WIDTH / 2
+                py = py * self.SCALE + HEIGHT / 2
+                updated_points.append((px, py))
             pygame.draw.lines(screen, self.color, False, updated_points, 2)
 
         pygame.draw.circle(screen, self.color, (x, y), self.radius)
+
+        if not self.sun:
+            distance_text = FONT.render(f"{round(self.distance_to_sun/1000, 1)} km", 1, WHITE)
+            screen.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
 
     def attraction(self, other):
         distance_x = other.x - self.x
