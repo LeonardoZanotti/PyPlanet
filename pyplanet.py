@@ -45,6 +45,20 @@ class Planet:
         y = self.y * self.SCALE + HEIGHT / 2
         pygame.draw.circle(screen, self.color, (x, y), self.radius)
 
+    def attraction(self, other):
+        distance_x = other.x - self.x
+        distance_y = other.y - self.y
+        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+        if other.sun:
+            self.distance_to_sun = distance
+
+        force = self.G * self.mass * other.mass / distance ** 2
+        theta = math.atan2(distance_y, distance_x)
+        force_x = math.cos(theta) * force
+        force_y = math.sin(theta) * force
+
+        return force_x, force_y
 
 def main():
     run = True
@@ -57,7 +71,7 @@ def main():
     mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
     mercury = Planet(0.387 * Planet.AU, 0, 8, DARK_GREY, 3.3 * 10**23)
     venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10**24)
-    
+
     planets = [sun, earth, mars, mercury, venus]
 
     while 1:
@@ -75,4 +89,5 @@ def main():
         pygame.display.update()
 
 
-main()
+if __name__ == '__main__':
+    main()
