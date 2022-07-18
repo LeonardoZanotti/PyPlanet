@@ -92,8 +92,8 @@ def main():
 
     earth.y_vel = 29.783 * 1000
     mars.y_vel = 24.077 * 1000
-    mercury.y_vel = 47.4 * 1000
-    venus.y_vel = -35.02 * 1000
+    mercury.y_vel = -47.4 * 1000
+    venus.y_vel = 35.02 * 1000
 
     planets = [sun, earth, mars, mercury, venus]
 
