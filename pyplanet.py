@@ -13,6 +13,8 @@ SIZE = WIDTH, HEIGHT = 800, 800
 SCREEN = pygame.display.set_mode(SIZE)
 pygame.display.set_caption("Planet simulation")
 BLACK = 0, 0, 0
+WHITE = 255, 255, 255
+YELLOW = 255, 255, 0
 
 
 class Planet:
@@ -35,21 +37,34 @@ class Planet:
         self.x_vel = 0
         self.y_vel = 0
 
+    def draw(self, screen):
+        x = self.x * self.SCALE + WIDTH / 2
+        y = self.y * self.SCALE + HEIGHT / 2
+        pygame.draw.circle(screen, self.color, (x, y), self.radius)
+
 
 def main():
     run = True
     clock = pygame.time.Clock()
 
-    while run:
+    sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
+    sun.sun = True
+
+    planets = [sun]
+
+    while 1:
         clock.tick(60)
         SCREEN.fill(BLACK)
-        pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
                 pygame.quit()
                 sys.exit()
+
+        for planet in planets:
+            planet.draw(SCREEN)
+
+        pygame.display.update()
 
 
 main()
