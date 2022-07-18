@@ -12,9 +12,12 @@ pygame.init()
 SIZE = WIDTH, HEIGHT = 800, 800
 SCREEN = pygame.display.set_mode(SIZE)
 pygame.display.set_caption("Planet simulation")
-BLACK = 0, 0, 0
-WHITE = 255, 255, 255
-YELLOW = 255, 255, 0
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+YELLOW = (255, 255, 0)
+BLUE = (100, 149, 237)
+RED = (188, 39, 50)
+DARK_GREY = (80, 71, 81)
 
 
 class Planet:
@@ -50,7 +53,12 @@ def main():
     sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
     sun.sun = True
 
-    planets = [sun]
+    earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9741 * 10**24)
+    mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
+    mercury = Planet(0.387 * Planet.AU, 0, 8, DARK_GREY, 3.3 * 10**23)
+    venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10**24)
+    
+    planets = [sun, earth, mars, mercury, venus]
 
     while 1:
         clock.tick(60)
