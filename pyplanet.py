@@ -4,7 +4,6 @@
 
 import math
 import sys
-from typing import Type
 
 import pygame
 
@@ -19,6 +18,7 @@ YELLOW = (255, 255, 0)
 BLUE = (100, 149, 237)
 RED = (188, 39, 50)
 DARK_GREY = (80, 71, 81)
+WHITE_YELLOW = (233, 233, 200)
 
 FONT = pygame.font.SysFont("comicsans", 16)
 
@@ -33,7 +33,7 @@ class Planet:
         self.x = x
         self.y = y
         self.radius = radius
-        self.color = color;
+        self.color = color
         self.mass = mass
 
         self.sun = False
@@ -96,6 +96,78 @@ class Planet:
         self.orbit.append((self.x, self.y))
 
 
+class Moon:
+    AU = 149.6e9  # Astronomical Unities
+    G = 6.67428e-11
+    SCALE = 250 / AU    # 1 AU = 100 pixels
+    TIMESTEP = 3600 * 24    # 1 day
+
+    def __init__(self, planet, x, y, radius, color, mass):
+        self.planet = planet
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.color = color
+        self.mass = mass
+
+        self.distance_to_planet = 0
+        self.orbit = []
+
+        self.x_vel = 0
+        self.y_vel = 0
+
+    def draw(self, screen):
+        x = self.x * self.SCALE + WIDTH / 2
+        y = self.y * self.SCALE + HEIGHT / 2
+
+        if len(self.orbit) > 2:
+            updated_points = []
+            for point in self.orbit:
+                px, py = point
+                px = px * self.SCALE + WIDTH / 2
+                py = py * self.SCALE + HEIGHT / 2
+                updated_points.append((px, py))
+            pygame.draw.lines(screen, self.color, False, updated_points, 2)
+
+        pygame.draw.circle(screen, self.color, (x, y), self.radius)
+
+        distance_text = FONT.render(f"{round(self.distance_to_planet/1000, 1)} km", 1, WHITE)
+        screen.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
+
+    def attraction(self, other):
+        distance_x = other.x - self.x
+        distance_y = other.y - self.y
+        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+
+        if other == self.planet:
+            self.distance_to_planet = distance
+
+        force = self.G * self.mass * other.mass / distance ** 2
+        theta = math.atan2(distance_y, distance_x)
+        force_x = math.cos(theta) * force
+        force_y = math.sin(theta) * force
+
+        return force_x, force_y
+
+    def update_position(self, planets):
+        total_fx = total_fy = 0
+
+        for planet in planets:
+            if self == planet:
+                continue
+
+            fx, fy = self.attraction(planet)
+            total_fx += fx
+            total_fy += fy
+
+        self.x_vel += total_fx / self.mass * self.TIMESTEP
+        self.y_vel += total_fy / self.mass * self.TIMESTEP
+
+        self.x += self.x_vel * self.TIMESTEP
+        self.y += self.y_vel * self.TIMESTEP
+        self.orbit.append((self.x, self.y))
+
+
 def main():
     clock = pygame.time.Clock()
 
@@ -112,7 +184,12 @@ def main():
     mercury.y_vel = -47.4 * 1000
     venus.y_vel = 35.02 * 1000
 
+    earth_moon = Moon(earth, -1.00256 * Moon.AU, 0, 4.35968, WHITE_YELLOW, 7.3477 * 10**22)
+
+    earth_moon.y_vel = 1.03 * 1000
+
     planets = [sun, earth, mars, mercury, venus]
+    moons = [earth_moon]
 
     while 1:
         clock.tick(60)
@@ -126,6 +203,10 @@ def main():
         for planet in planets:
             planet.update_position(planets)
             planet.draw(SCREEN)
+
+        for moon in moons:
+            moon.update_position(planets)
+            moon.draw(SCREEN)
 
         pygame.display.update()
 
