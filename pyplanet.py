@@ -23,12 +23,32 @@ WHITE_YELLOW = (233, 233, 200)
 FONT = pygame.font.SysFont("comicsans", 16)
 
 
-class Planet:
+class Star:
     AU = 149.6e9  # Astronomical Unities
     G = 6.67428e-11
     SCALE = 250 / AU    # 1 AU = 100 pixels
-    TIMESTEP = 3600 * 24    # 1 day
+    TIMESTEP = 3600    # 1 hour
 
+    def update_position(self, planets):
+        total_fx = total_fy = 0
+
+        for planet in planets:
+            if self == planet:
+                continue
+
+            fx, fy = self.attraction(planet)
+            total_fx += fx
+            total_fy += fy
+
+        self.x_vel += total_fx / self.mass * self.TIMESTEP
+        self.y_vel += total_fy / self.mass * self.TIMESTEP
+
+        self.x += self.x_vel * self.TIMESTEP
+        self.y += self.y_vel * self.TIMESTEP
+        self.orbit.append((self.x, self.y))
+
+
+class Planet(Star):
     def __init__(self, x, y, radius, color, mass):
         self.x = x
         self.y = y
@@ -77,31 +97,8 @@ class Planet:
 
         return force_x, force_y
 
-    def update_position(self, planets):
-        total_fx = total_fy = 0
 
-        for planet in planets:
-            if self == planet:
-                continue
-
-            fx, fy = self.attraction(planet)
-            total_fx += fx
-            total_fy += fy
-
-        self.x_vel += total_fx / self.mass * self.TIMESTEP
-        self.y_vel += total_fy / self.mass * self.TIMESTEP
-
-        self.x += self.x_vel * self.TIMESTEP
-        self.y += self.y_vel * self.TIMESTEP
-        self.orbit.append((self.x, self.y))
-
-
-class Moon:
-    AU = 149.6e9  # Astronomical Unities
-    G = 6.67428e-11
-    SCALE = 250 / AU    # 1 AU = 100 pixels
-    TIMESTEP = 3600 * 24    # 1 day
-
+class Moon(Star):
     def __init__(self, planet, x, y, radius, color, mass):
         self.planet = planet
         self.x = x
@@ -148,24 +145,6 @@ class Moon:
         force_y = math.sin(theta) * force
 
         return force_x, force_y
-
-    def update_position(self, planets):
-        total_fx = total_fy = 0
-
-        for planet in planets:
-            if self == planet:
-                continue
-
-            fx, fy = self.attraction(planet)
-            total_fx += fx
-            total_fy += fy
-
-        self.x_vel += total_fx / self.mass * self.TIMESTEP
-        self.y_vel += total_fy / self.mass * self.TIMESTEP
-
-        self.x += self.x_vel * self.TIMESTEP
-        self.y += self.y_vel * self.TIMESTEP
-        self.orbit.append((self.x, self.y))
 
 
 def main():
