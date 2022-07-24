@@ -136,11 +136,13 @@ class Moon(Star):
         distance_y = other.y - self.y
         distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
 
-        if other == self.planet:
-            self.distance_to_planet = distance
-
         force = self.G * self.mass * other.mass / distance ** 2
         theta = math.atan2(distance_y, distance_x)
+
+        if other == self.planet:
+            self.distance_to_planet = distance
+            force = force * 500
+
         force_x = math.cos(theta) * force
         force_y = math.sin(theta) * force
 
@@ -165,7 +167,7 @@ def main():
 
     earth_moon = Moon(earth, -1.00256 * Moon.AU, 0, 4.35968, WHITE_YELLOW, 7.3477 * 10**22)
 
-    earth_moon.y_vel = 1.03 * 1000
+    earth_moon.y_vel = 3.67 * 1000
 
     planets = [sun, earth, mars, mercury, venus]
     moons = [earth_moon]
