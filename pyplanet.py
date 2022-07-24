@@ -26,8 +26,8 @@ FONT = pygame.font.SysFont("comicsans", 16)
 class Star:
     AU = 149.6e9  # Astronomical Unities
     G = 6.67428e-11
-    SCALE = 250 / AU    # 1 AU = 100 pixels
-    TIMESTEP = 3600    # 1 hour
+    SCALE = 250 / AU  # 1 AU = 100 pixels
+    TIMESTEP = 3600  # 1 hour
 
     def update_position(self, planets):
         total_fx = total_fy = 0
@@ -79,8 +79,8 @@ class Planet(Star):
         pygame.draw.circle(screen, self.color, (x, y), self.radius)
 
         if not self.sun:
-            distance_text = FONT.render(f"{round(self.distance_to_sun/1000, 1)} km", 1, WHITE)
-            screen.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
+            distance_text = FONT.render(f"{round(self.distance_to_sun / 1000, 1)} km", 1, WHITE)
+            screen.blit(distance_text, (x - distance_text.get_width() / 2, y - distance_text.get_height() / 2))
 
     def attraction(self, other):
         distance_x = other.x - self.x
@@ -128,21 +128,19 @@ class Moon(Star):
 
         pygame.draw.circle(screen, self.color, (x, y), self.radius)
 
-        distance_text = FONT.render(f"{round(self.distance_to_planet/1000, 1)} km", 1, WHITE)
-        screen.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
+        distance_text = FONT.render(f"{round(self.distance_to_planet / 1000, 1)} km", 1, WHITE)
+        screen.blit(distance_text, (x - distance_text.get_width() / 2, y - distance_text.get_height() / 2))
 
     def attraction(self, other):
         distance_x = other.x - self.x
         distance_y = other.y - self.y
         distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
 
-        force = self.G * self.mass * other.mass / distance ** 2
-        theta = math.atan2(distance_y, distance_x)
-
         if other == self.planet:
             self.distance_to_planet = distance
-            force = force * 500
 
+        force = self.G * self.mass * other.mass / distance ** 2
+        theta = math.atan2(distance_y, distance_x)
         force_x = math.cos(theta) * force
         force_y = math.sin(theta) * force
 
@@ -152,22 +150,23 @@ class Moon(Star):
 def main():
     clock = pygame.time.Clock()
 
-    sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10**30)
+    sun = Planet(0, 0, 30, YELLOW, 1.98892 * 10 ** 30)
     sun.sun = True
 
-    earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9741 * 10**24)
-    mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10**23)
-    mercury = Planet(0.387 * Planet.AU, 0, 8, DARK_GREY, 3.3 * 10**23)
-    venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10**24)
+    earth = Planet(-1 * Planet.AU, 0, 16, BLUE, 5.9741 * 10 ** 24)
+    mars = Planet(-1.524 * Planet.AU, 0, 12, RED, 6.39 * 10 ** 23)
+    mercury = Planet(0.387 * Planet.AU, 0, 8, DARK_GREY, 3.3 * 10 ** 23)
+    venus = Planet(0.723 * Planet.AU, 0, 14, WHITE, 4.8685 * 10 ** 24)
 
     earth.y_vel = 29.783 * 1000
     mars.y_vel = 24.077 * 1000
     mercury.y_vel = -47.4 * 1000
     venus.y_vel = 35.02 * 1000
 
-    earth_moon = Moon(earth, -1.00256 * Moon.AU, 0, 4.35968, WHITE_YELLOW, 7.3477 * 10**22)
+    earth_moon = Moon(earth, -1.00256 * Moon.AU, 0, 4.35968, WHITE_YELLOW, 7.3477 * 10 ** 22)
 
-    earth_moon.y_vel = 3.67 * 1000
+    earth_moon.y_vel = 30.783 * 1000  # earth velocity plus moon velocity (so the moon goes with the earth around
+    # the sun and also goes around the earth)
 
     planets = [sun, earth, mars, mercury, venus]
     moons = [earth_moon]
